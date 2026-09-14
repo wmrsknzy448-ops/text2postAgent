@@ -10,20 +10,54 @@ not involved at runtime — no skills, no terminal, no operator in the loop.
 
 ## Run it
 
-```bash
-pip install google-genai fastapi uvicorn
-uvicorn service.main:app --reload --port 8000
+**Requirements:** Python 3.10 or newer. A Gemini API key — free, no credit card,
+from <https://aistudio.google.com/apikey>. ffmpeg and ffprobe on `PATH` are
+needed only for the video path; the image-carousel path works without them.
+
+### Windows (PowerShell)
+
+```powershell
+cd hackreel
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+$env:GEMINI_API_KEY = "your-key-here"
+.\.venv\Scripts\python.exe -m uvicorn service.main:app --port 8000
 ```
 
-Open <http://127.0.0.1:8000/>.
-
-The key is read from the environment and never written to a file. Set it in
-your own shell:
+### macOS / Linux
 
 ```bash
-# free key, no credit card: https://aistudio.google.com/apikey
-export GEMINI_API_KEY="..."
+cd hackreel
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+export GEMINI_API_KEY="your-key-here"
+.venv/bin/python -m uvicorn service.main:app --port 8000
 ```
+
+Then open <http://127.0.0.1:8000/>.
+
+`GEMINI_API_KEY` is the only variable needed to run the service. The key is read
+from the environment and is never written to a file. The Zernio and ntfy
+settings further down are for command-line publishing only — `main.py` never
+imports `publish.py`, so the web UI runs without them.
+
+Three notes, each of which cost someone an hour:
+
+- **Install from `requirements.txt`, not a package list.** Pillow and edge-tts
+  are easy to miss, and Pillow fails at *import* time — the server will not
+  start at all without it.
+- **Call the venv's interpreter directly** rather than activating. On Windows the
+  default execution policy is `Restricted`, where `Activate.ps1` refuses to run;
+  `.\.venv\Scripts\python.exe -m uvicorn` sidesteps activation entirely.
+- **Linux/macOS: install fonts.** Slide rendering looks for DejaVu, Liberation
+  or Noto. A slim container has none and silently falls back to a generic face —
+  it still renders, but the headlines lose their impact. On Debian/Ubuntu:
+  `sudo apt-get install -y fonts-dejavu-core fonts-liberation`
+
+Verified on Windows with Python 3.12.10 from a clean clone and a fresh venv: the
+server starts, `/api/health` responds, and both carousel and video render. The
+macOS/Linux commands follow the standard venv layout but were not run on those
+platforms; Python 3.10 and 3.11 are the dependency floor, tested only on 3.12.
 
 ## Layout
 
