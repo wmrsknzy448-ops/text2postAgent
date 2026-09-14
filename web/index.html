@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HackReel</title>
+<style>
+  :root{
+    --bg:#0b0e14; --panel:#141922; --panel2:#1b2130; --line:#252c3a;
+    --fg:#e8ecf4; --muted:#8a94a8; --accent:#ff4e42; --ok:#3ddc97; --warn:#ffb020;
+    --radius:10px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--fg);
+    font:15px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  .wrap{max-width:940px; margin:0 auto; padding:32px 20px 80px}
+  header{display:flex; align-items:baseline; gap:12px; margin-bottom:6px}
+  h1{font-size:26px; margin:0; letter-spacing:-.02em}
+  .tag{color:var(--accent); font-weight:700; font-size:12px; letter-spacing:.14em}
+  .lede{color:var(--muted); margin:0 0 26px}
+
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:18px}
+  label{display:block; font-size:12px; letter-spacing:.09em; color:var(--muted); margin-bottom:8px; font-weight:600}
+  textarea{
+    width:100%; min-height:150px; resize:vertical; background:var(--bg); color:var(--fg);
+    border:1px solid var(--line); border-radius:8px; padding:12px; font:inherit;
+  }
+  textarea:focus{outline:none; border-color:var(--accent)}
+  .row{display:flex; gap:12px; align-items:center; margin-top:14px; flex-wrap:wrap}
+  button{
+    background:var(--accent); color:#fff; border:0; border-radius:8px;
+    padding:11px 20px; font:inherit; font-weight:650; cursor:pointer;
+  }
+  button:disabled{opacity:.45; cursor:not-allowed}
+  button.ghost{background:transparent; border:1px solid var(--line); color:var(--fg)}
+  select{background:var(--bg); color:var(--fg); border:1px solid var(--line); border-radius:8px; padding:10px}
+  .spacer{flex:1}
+
+  #status{margin-top:18px; min-height:22px; color:var(--muted); font-size:14px}
+  .dot{display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:8px; vertical-align:1px}
+  .dot.busy{background:var(--warn); animation:pulse 1s ease-in-out infinite}
+  .dot.ok{background:var(--ok)} .dot.err{background:var(--accent)}
+  @keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+
+  section{margin-top:22px}
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:18px}
+  .card.question{border-color:var(--warn); background:#1e1a10}
+  .card.error{border-color:var(--accent); background:#1e1113}
+  h2{font-size:13px; letter-spacing:.11em; color:var(--muted); margin:0 0 12px; font-weight:700}
+  .qtext{font-size:17px; line-height:1.5; margin:0 0 16px}
+
+  .meta{display:flex; gap:22px; flex-wrap:wrap; color:var(--muted); font-size:13px; margin-bottom:4px}
+  .meta b{color:var(--fg); font-weight:650}
+  .reason{color:var(--muted); font-size:13px; font-style:italic; margin:10px 0 0}
+
+  .chips{display:flex; gap:7px; flex-wrap:wrap; margin-top:14px}
+  .chip{font-size:11px; font-weight:700; letter-spacing:.05em; padding:4px 9px; border-radius:20px; border:1px solid}
+  .chip.pass{color:var(--ok); border-color:#1e5c44; background:#0f2119}
+  .chip.fail{color:var(--accent); border-color:#5c2420; background:#210f0f}
+
+  .beat{display:grid; grid-template-columns:190px 1fr; gap:16px; padding:15px 0; border-top:1px solid var(--line)}
+  .beat:first-of-type{border-top:0}
+  .slide{
+    background:var(--panel2); border:1px solid var(--line); border-radius:8px;
+    padding:12px; text-align:center; align-self:start;
+  }
+  .role{font-size:10px; letter-spacing:.12em; color:var(--accent); font-weight:700; margin-bottom:7px}
+  .headline{font-size:19px; font-weight:800; letter-spacing:-.01em; line-height:1.15}
+  .sub{font-size:11px; color:var(--muted); margin-top:6px}
+  .narr{align-self:center}
+  .narr .lbl{font-size:10px; letter-spacing:.12em; color:var(--muted); font-weight:700; margin-bottom:5px}
+  .hidden{display:none}
+  #shots{display:flex; gap:10px; overflow-x:auto; padding:4px 0 10px}
+  #shots img{width:150px; border-radius:8px; border:1px solid var(--line); flex:0 0 auto}
+  #shots img:first-child{border-color:var(--accent)}
+  .note{color:var(--muted); font-size:12.5px; margin-top:14px}
+  code{background:var(--panel2); padding:1px 5px; border-radius:4px; font-size:12.5px}
+  @media(max-width:640px){ .beat{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><h1>HackReel</h1><span class="tag">PROMPT &rarr; POST</span></header>
+  <p class="lede">Describe your hackathon project. If the description is too thin to make
+     something honest, it asks you a question instead of inventing details.</p>
+
+  <div class="panel">
+    <label for="prompt">PROJECT DESCRIPTION</label>
+    <textarea id="prompt" placeholder="What did you build, what does it do, and what was actually hard about it?"></textarea>
+    <div class="row">
+      <button id="go">Generate script</button>
+      <select id="effort" title="Reasoning effort">
+        <option value="medium">medium</option>
+        <option value="high" selected>high</option>
+        <option value="xhigh">xhigh</option>
+      </select>
+    </div>
+    <div id="status"></div>
+  </div>
+
+  <section id="question" class="hidden">
+    <div class="card question">
+      <h2>NEEDS ONE MORE DETAIL</h2>
+      <p class="qtext" id="qtext"></p>
+      <textarea id="answer" style="min-height:90px" placeholder="Answer here - it gets added to your description."></textarea>
+      <div class="row"><button id="retry">Add this and try again</button></div>
+    </div>
+  </section>
+
+  <section id="error" class="hidden"><div class="card error">
+    <h2>ERROR</h2><p id="etext" style="margin:0"></p>
+  </div></section>
+
+  <section id="result" class="hidden">
+    <div class="card">
+      <h2>SCRIPT</h2>
+      <div class="meta">
+        <span>shape <b id="m-shape"></b></span>
+        <span>runtime <b id="m-dur"></b></span>
+        <span>format <b id="m-fmt"></b></span>
+        <span>review <b id="m-crit"></b></span>
+      </div>
+      <p class="reason" id="m-reason"></p>
+      <div class="chips" id="chips"></div>
+      <div id="beats" style="margin-top:18px"></div>
+      <p class="note" id="caption"></p>
+      <p class="note">Left column is drawn onto the slide (read). Right column is
+         spoken by the voice (heard). They are deliberately different.</p>
+      <div class="row">
+        <button id="render">Render carousel</button>
+        <span class="note" style="margin:0">Video needs ffmpeg — not installed yet.</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="post" class="hidden">
+    <div class="card">
+      <h2>CAROUSEL &mdash; READY</h2>
+      <div class="meta">
+        <span>images <b id="p-count"></b></span>
+        <span>privacy <b id="p-priv"></b></span>
+        <span>cover <b>slide 1</b></span>
+      </div>
+      <div id="shots"></div>
+      <p class="note" id="p-note"></p>
+    </div>
+  </section>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const show = (id, on) => $(id).classList.toggle('hidden', !on);
+let lastPrompt = '';
+let lastScript = null;
+
+function setStatus(kind, msg){
+  const cls = {busy:'busy', ok:'ok', err:'err'}[kind] || '';
+  $('status').innerHTML = kind ? `<span class="dot ${cls}"></span>${msg}` : '';
+}
+
+function esc(s){ const d=document.createElement('div'); d.textContent=s??''; return d.innerHTML; }
+
+function renderScript(data){
+  const s = data.script;
+  lastScript = s;
+  $('m-shape').textContent = (s.shape||'').replace(/_/g,' ');
+  $('m-dur').textContent   = (data.est_duration_sec ?? '?') + 's';
+  $('m-fmt').textContent   = data.format_hint || '?';
+  $('m-crit').textContent  = data.critic_outcome || '-';
+  $('m-reason').textContent = s.shape_reason ? '“' + s.shape_reason + '”' : '';
+
+  $('chips').innerHTML = (data.rubric||[])
+    .map(r => `<span class="chip ${r.passed?'pass':'fail'}">${esc(r.id)} ${r.passed?'PASS':'FAIL'}</span>`)
+    .join('');
+
+  $('beats').innerHTML = (s.beats||[]).map(b => `
+    <div class="beat">
+      <div class="slide">
+        <div class="role">${esc((b.role||'').replace(/_/g,' '))}</div>
+        <div class="headline">${esc(b.headline)}</div>
+        ${b.sub ? `<div class="sub">${esc(b.sub)}</div>` : ''}
+      </div>
+      <div class="narr">
+        <div class="lbl">NARRATION</div>
+        <div>${esc(b.narration)}</div>
+      </div>
+    </div>`).join('');
+
+  const tags = (s.hashtags||[]).join(' ');
+  $('caption').innerHTML = s.caption
+    ? `<b>Caption:</b> ${esc(s.caption)} ${esc(tags)}` : '';
+  show('result', true);
+}
+
+$('render').onclick = async () => {
+  if (!lastScript) return;
+  $('render').disabled = true;
+  show('post', false);
+  setStatus('busy', 'Rendering slides…');
+  try {
+    const res = await fetch('/api/render', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({script: lastScript, format:'carousel'})
+    });
+    const p = await res.json();
+    if (p.status !== 'ok'){
+      setStatus('err','Render failed.');
+      $('etext').textContent = p.error || 'Unknown error';
+      show('error', true);
+      return;
+    }
+    $('p-count').textContent = p.images.length;
+    $('p-priv').textContent  = p.privacy + (p.draft ? ' + draft' : '');
+    $('shots').innerHTML = p.images
+      .map(im => `<img src="${im.url}" alt="${esc(im.headline)}" title="${esc(im.headline)}">`)
+      .join('');
+    $('p-note').textContent =
+      'The caption does not transfer in draft mode, which is why the text is on the slides. '
+      + 'Nothing has been sent anywhere. Publishing is operator-only and deliberately not exposed here — '
+      + 'it runs from the command line, behind the phone-approval gate.';
+    show('post', true);
+    setStatus('ok', 'Carousel ready.');
+  } catch(e){
+    setStatus('err','Render failed.');
+    $('etext').textContent = e.message; show('error', true);
+  } finally { $('render').disabled = false; }
+};
+
+async function run(prompt){
+  lastPrompt = prompt;
+  lastScript = null;
+  ['result','question','error','post'].forEach(id => show(id, false));
+  $('go').disabled = true; $('retry').disabled = true;
+  setStatus('busy', 'Drafting, then critiquing the draft. Two passes, this takes a while…');
+
+  try {
+    const res  = await fetch('/api/generate', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({prompt, effort: $('effort').value})
+    });
+    const data = await res.json();
+
+    if (data.status === 'ok'){
+      setStatus('ok', 'Script ready.');
+      renderScript(data);
+    } else if (data.status === 'need_more_info'){
+      setStatus('ok', 'Not enough to work with yet — see the question below.');
+      $('qtext').textContent = data.question;
+      $('answer').value = '';
+      show('question', true);
+      $('answer').focus();
+    } else {
+      setStatus('err', 'Failed.');
+      $('etext').textContent = (data.error||'Unknown error')
+        + (data.retryable ? ' — this one is worth retrying.' : '');
+      show('error', true);
+    }
+  } catch (e){
+    setStatus('err','Failed.');
+    $('etext').textContent = 'Could not reach the backend: ' + e.message;
+    show('error', true);
+  } finally {
+    $('go').disabled = false; $('retry').disabled = false;
+  }
+}
+
+$('go').onclick = () => {
+  const p = $('prompt').value.trim();
+  if (!p){ setStatus('err','Describe your project first.'); return; }
+  run(p);
+};
+
+$('retry').onclick = () => {
+  const extra = $('answer').value.trim();
+  if (!extra){ $('answer').focus(); return; }
+  // Fold the answer back into the description so the next run sees one prompt.
+  const merged = lastPrompt + '\n\n' + extra;
+  $('prompt').value = merged;
+  run(merged);
+};
+
+fetch('/api/health').then(r=>r.json()).then(h=>{
+  if (!h.api_key_present)
+    setStatus('err','GEMINI_API_KEY is not set on the server — generation will fail.');
+}).catch(()=>{});
+</script>
+</body>
+</html>

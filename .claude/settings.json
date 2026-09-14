@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "ask": [
+      "mcp__zernio__*",
+      "Bash(curl:*zernio.com*)",
+      "Bash(*zernio.com*)",
+      "PowerShell(*zernio.com*)",
+      "Bash(python pipeline/05_publish.py*)"
+    ]
+  }
+}

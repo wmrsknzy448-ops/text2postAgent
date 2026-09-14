@@ -1,0 +1,21 @@
+# HackReel - direct dependencies, pinned to the versions this was built and
+# verified against (2026-09-12). Generated from the working environment, not
+# guessed; the resolved transitive tree is in requirements-lock.txt.
+#
+# Python >= 3.10 is required. That floor comes from the packages, not our code:
+# google-genai, fastapi, uvicorn and pillow all declare requires-python >=3.10.
+
+google-genai==2.20.0      # script_gen.py - Gemini API (needs >=2.x for
+                          # response_json_schema and ThinkingConfig.thinking_level)
+fastapi==0.141.1          # main.py - HTTP layer
+uvicorn==0.52.4           # the ASGI server main.py is run under
+pydantic==2.13.3          # main.py imports BaseModel/Field directly
+                          # (also a fastapi dependency, but pinned because we import it)
+pillow==12.3.0            # slides.py - slide rendering. Needs >=10.1 for
+                          # ImageFont.load_default(size=...)
+edge-tts==7.2.8           # voice.py - narration. Needs >=7 for
+                          # Communicate(boundary="WordBoundary")
+
+# NOT a pip dependency: ffmpeg + ffprobe must be on PATH for the video path
+# (assemble.py). The carousel path works without them. Verified against
+# ffmpeg 9.0. On Windows: winget install Gyan.FFmpeg

@@ -1,0 +1,83 @@
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib60/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments (89 MB here, machine-specific - rebuild from requirements.txt)
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Testing / type checking / coverage
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.ruff_cache/
+.tox/
+.nox/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.cache
+
+# ---------------------------------------------------------------------------
+# HackReel-specific
+# ---------------------------------------------------------------------------
+
+# Generated output. Every run writes a new timestamped bundle: slides, mp3s,
+# mp4s. Not source, and it grows without bound.
+#
+# It also contains publish_receipt.json, which holds the LIVE Zernio response -
+# platform post ids, the TikTok account id, CDN media urls and the account
+# display name. Those must not reach a public repo.
+assets/output/
+assets/temp/
+
+# Credentials are read from the environment ONLY and are never written to a
+# file by this project. These are backstops in case someone adds a dotenv.
+.env
+.env.*
+*.env
+!.env.example
+
+# ntfy approval topic names. ntfy.sh topics are unauthenticated: anyone who can
+# read the topic name can send an approval, so treat these as secrets.
+mltok-ntfy.conf
+*ntfy*.conf
+
+# ---------------------------------------------------------------------------
+# OS / editor
+# ---------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+.idea/
+.vscode/
