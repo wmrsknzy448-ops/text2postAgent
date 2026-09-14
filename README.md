@@ -1,6 +1,3 @@
-# Text2Post-Agent
-
-Turn any project idea into a TikTok full completed post via script to video pipeline.
 
 ## About The Project
 
